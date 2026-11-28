@@ -122,7 +122,7 @@ Then get the App above and scan the QR code or input the Start URL.
 - **File, image, and voice input** — attach files, drag and drop files or images on desktop, send compressed images, and dictate messages on iOS
 - **Session drafts** — keep text and uploaded attachments when switching sessions or reopening the App on the same device
 - **Session management** — rename sessions through their native runtime, and long-press to multi-select and delete sessions or projects, optionally removing their local files
-- **Pairing and devices** — add computers and phones by QR code, remove a device (which replaces the encryption key), and recover your account with a recovery phrase
+- **Pairing and devices** — add computers and phones by QR code, remove a device (which replaces the recovery phrase), and recover your account with a recovery phrase
 - **API key rotation** — rotate the API key with `--rotate-key` while preserving existing data
 - **macOS tabs** — work on multiple sessions in independent tabs
 - **Claude usage insights** — status, settings, rate limits, token history, and model usage charts

@@ -122,7 +122,7 @@ curl -fsSL https://raw.githubusercontent.com/agentbaton/baton/main/server/instal
 - **文件、图片与语音输入** — 添加文件附件，在桌面端拖入文件或图片，发送压缩图片，并在 iOS 上通过语音输入消息。
 - **Session 草稿** — 在同一设备上切换 Session 或重新打开 App 时，保留文字和已上传的附件。
 - **Session 管理** — 通过对应运行环境的原生能力重命名 Session，长按可多选并删除 Session 或项目，也可同时删除本地文件。
-- **配对与设备** — 通过二维码添加电脑和手机，移除设备（同时更换加密密钥），并可使用恢复短语找回账户。
+- **配对与设备** — 通过二维码添加电脑和手机，移除设备（同时更换恢复短语），并可使用恢复短语找回账户。
 - **API key 轮换** — 支持通过 `--rotate-key` 轮换 API key，保留已有数据。
 - **macOS 标签页** — 通过独立标签页同时处理多个 Session。
 - **Claude 用量分析** — 查看状态、设置、速率限制、Token 历史和模型用量图表。
