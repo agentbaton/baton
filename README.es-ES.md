@@ -122,7 +122,7 @@ Después, descarga la App indicada arriba y escanea el código QR o introduce la
 - **Entrada de archivos, imágenes y voz** — adjunta archivos, arrastra archivos o imágenes en el escritorio, envía imágenes comprimidas y dicta mensajes en iOS.
 - **Borradores de Session** — conserva el texto y los archivos adjuntos ya subidos al cambiar de Session o volver a abrir la App en el mismo dispositivo.
 - **Gestión de Sessions** — cambia el nombre de las Sessions mediante su entorno nativo y mantén pulsado para seleccionar y eliminar varias Sessions o proyectos, con la opción de eliminar también sus archivos locales.
-- **Emparejamiento y dispositivos** — añade ordenadores y teléfonos con un código QR, elimina un dispositivo (lo que sustituye la clave de cifrado) y recupera tu cuenta con una frase de recuperación.
+- **Emparejamiento y dispositivos** — añade ordenadores y teléfonos con un código QR, elimina un dispositivo (lo que sustituye la frase de recuperación) y recupera tu cuenta con una frase de recuperación.
 - **Rotación de la clave API** — cambia la clave API con `--rotate-key` y conserva los datos existentes.
 - **Pestañas en macOS** — trabaja en varias Sessions mediante pestañas independientes.
 - **Estadísticas de uso de Claude** — consulta el estado, la configuración, los límites de uso, el historial de tokens y los gráficos de uso de modelos.
