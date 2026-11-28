@@ -191,6 +191,14 @@ export class AccountObject extends DurableObject {
     this.usage = new Usage(this.ctx, this.env);
   }
 
+  // The account's Apps with a token now (removed ones are gone): the monitor's App count.
+  async appCount(account) {
+    const table = createTable(this.env, { kind: 'account', name: account, call: this.store });
+    const rows = (await table.query({ KeyConditionExpression: '#pk = :pk AND begins_with(#sk, :sk)', ExpressionAttributeNames: { '#pk': 'pk', '#sk': 'sk' },
+      ExpressionAttributeValues: { ':pk': `ACCOUNT#${account}`, ':sk': 'TOKEN#' } })).Items;
+    return rows.filter((row) => row.kind === 'app').length;
+  }
+
   // An alarm armed by an older version: sweep once, re-arm nothing.
   async alarm() {
     this.swept = 0;
