@@ -228,6 +228,7 @@ export class MonitorStore extends DurableObject {
     this.sql.exec('CREATE TABLE IF NOT EXISTS snaps (t INTEGER PRIMARY KEY, ok INTEGER, online INTEGER, data TEXT)');
     this.sql.exec('CREATE TABLE IF NOT EXISTS devices (id TEXT PRIMARY KEY, role TEXT, first INTEGER)'); // every App and computer seen
     try { this.sql.exec('ALTER TABLE devices ADD COLUMN acct TEXT'); } catch {} // its account's hash: a purge removes only those
+    this.sql.exec('CREATE TABLE IF NOT EXISTS apps (acct TEXT PRIMARY KEY, n INTEGER)'); // each account's Apps with a token, last seen
   }
 
   // Each keyed alert once; one email per run lists them all.
@@ -311,6 +312,13 @@ export class MonitorStore extends DurableObject {
         state.devicesAt = now;
       } catch (error) { console.log(`devices: ${error.message}`); }
     }
+    // The App count: each account active this month reports the Apps it has now, so removed ones leave it.
+    for (const a of used.accounts ?? []) {
+      if (a.name === env.PROBE_ACCOUNT || state.purged?.[a.name] || !/^[0-9a-f]{16}$/.test(a.name ?? '')) continue;
+      try {
+        this.sql.exec('INSERT OR REPLACE INTO apps VALUES (?, ?)', a.name, await env.ACCOUNT.get(env.ACCOUNT.idFromString(a.objectId)).appCount(a.name));
+      } catch (error) { console.log(`apps ${a.name}: ${error.message}`); }
+    }
     // New alerts are logged once; an email that could not be sent is retried with the next run's (at most 20 kept).
     const fresh = this.pending ?? [];
     this.pending = null;
@@ -330,6 +338,7 @@ export class MonitorStore extends DurableObject {
       for (const [name, p] of Object.entries(state.purged)) {
         delete state.blocked?.[name];
         this.sql.exec('DELETE FROM devices WHERE acct = ?', p.hash);
+        this.sql.exec('DELETE FROM apps WHERE acct = ?', name);
       }
     }
     for (const [name, m] of Object.entries(state.lifted ?? {})) if (m === month) delete state.blocked[name];
@@ -366,6 +375,7 @@ export class MonitorStore extends DurableObject {
     delete state.lifted?.[name];
     await this.ctx.storage.put('state', state);
     this.sql.exec('DELETE FROM devices WHERE acct = ?', hash);
+    this.sql.exec('DELETE FROM apps WHERE acct = ?', name);
     this.cached = null;
     this.purges = (this.purges ?? 0) + 1; // a data() read in flight meanwhile is not cached
     return true;
@@ -400,7 +410,8 @@ export class MonitorStore extends DurableObject {
     const value = { now, latest: last, series, probe: this.env.PROBE_ACCOUNT, uptime: { today: uptime(midnight), week: uptime(now - 7 * 1440 * MIN) },
       blocked: state.blocked ?? {}, alerts: state.log ?? [], cap: Number(this.env.COST_CAP || 1),
       relays: Object.fromEntries([...(await this.ctx.storage.list({ prefix: 'relay:' }))].map(([k, r]) => [k.slice(6), r])),
-      devices: Object.fromEntries(this.sql.exec('SELECT role, count(*) AS n FROM devices GROUP BY role').toArray().map((r) => [r.role, r.n])),
+      devices: { ...Object.fromEntries(this.sql.exec('SELECT role, count(*) AS n FROM devices GROUP BY role').toArray().map((r) => [r.role, r.n])),
+        app: this.sql.exec('SELECT coalesce(sum(n), 0) AS n FROM apps').one().n },
       live: await live(this.env, skipped(this.env, state)).catch((error) => ({ error: error.message })) };
     if (purges === this.purges) this.cached = { until: now + MIN, value };
     return value;
